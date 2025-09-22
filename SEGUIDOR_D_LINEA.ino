@@ -1,4 +1,4 @@
-//Place where are the pines
+//Place where are the pines uwu
 const int sensorIzq  = 2; 
 const int sensorDer = 3;
 const int motorIzqAd = 9;
