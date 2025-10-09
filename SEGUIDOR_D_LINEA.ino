@@ -1,80 +1,72 @@
-//Place where are the pines uwu
 const int sensorIzq  = 2; 
-const int sensorDer = 3;
+const int sensorDer  = 3;
+
+// Pines PWM para motores
 const int motorIzqAd = 9;
-const int motorIzqback = 10;
+const int motorIzqBack = 10;
 const int motorDereAd = 11;
 const int motorDereBack = 12;
 
+// Velocidades PWM (0-255)
+const int velMax = 255;      // velocidad máxima
+const int velGiro = 150;     // velocidad más lenta para giros suaves
+
 void setup() {
-  // put your setup code here, to run once:
-pinMode(sensorIzq, INPUT);
-pinMode(sensorDer,INPUT);
-pinMode(motorIzqAd,OUTPUT);
-pinMode(motorIzqback,OUTPUT);
-pinMode(motorDereAd,OUTPUT);
-pinMode(motorDereBack,OUTPUT);
+  pinMode(sensorIzq, INPUT);
+  pinMode(sensorDer, INPUT);
 
+  pinMode(motorIzqAd, OUTPUT);
+  pinMode(motorIzqBack, OUTPUT);
+  pinMode(motorDereAd, OUTPUT);
+  pinMode(motorDereBack, OUTPUT);
 
+  Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  int valor1 = 0;
-  int valor2 = 0;
-  valor1 = digitalRead(sensorIzq);
-  valor2 = digitalRead(sensorDer);
-  //Los 2 sensores estan sobre la linea y no detectan nada blanco
-  if(valor1 == LOW && valor2 == LOW)
-  {
+  int valorIzq = digitalRead(sensorIzq);
+  int valorDer = digitalRead(sensorDer);
+
+  Serial.print("Izq: "); Serial.print(valorIzq);
+  Serial.print("  Der: "); Serial.println(valorDer);
+
+  // Ambos sensores ven blanco → avanzar recto
+  if (valorIzq == HIGH && valorDer == HIGH) {
     avanzar();
   }
-  //Solo el izquierdo esta sobre la linea
-  if(valor1 ==LOW && valor2 ==HIGH)
-  {
+  // Sensor izquierdo ve negro → giro suave izquierda
+  else if (valorIzq == LOW && valorDer == HIGH) {
     girarIzquierda();
   }
-  //Caso donde solo el derecho esta sobre la linea 
-  if(valor1==HIGH && valor2 ==LOW)
-  {
+  // Sensor derecho ve negro → giro suave derecha
+  else if (valorIzq == HIGH && valorDer == LOW) {
     girarDerecha();
   }
-  //Ningun sensor esta sobre la linea negra
- if(valor1 == HIGH && valor2 == HIGH)
- {
-  detener();
- }
- 
+  // Ambos sensores ven negro → avanzar recto (suave)
+  else if (valorIzq == LOW && valorDer == LOW) {
+    avanzar();
+  }
 }
-//Creacion de funciones 
-//Funcion para avanzar y nomas 
-void avanzar()
-{
-  digitalWrite(motorIzqAd,HIGH);
-  digitalWrite(motorIzqBack,LOW);
-  digitalWrite(motorDereAd,HIGH);
-  digitalWrite(motorDereBack,LOW);
+
+// === Funciones de movimiento con PWM ===
+
+void avanzar() {
+  analogWrite(motorIzqAd, velMax);
+  digitalWrite(motorIzqBack, LOW);
+  analogWrite(motorDereAd, velMax);
+  digitalWrite(motorDereBack, LOW);
 }
-//Funcion para girar derecha
-void girarDerecha()
-{
-  digitalWrite(motorIzqAd,HIGH);
-  digitalWrite(motorIzqBack,LOW);
-  digitalWrite(motorDereAd,LOW);
-  digitalWrite(motorDereBack,LOW);
+
+void girarIzquierda() {
+  analogWrite(motorIzqAd, velGiro);  // izquierdo más lento
+  digitalWrite(motorIzqBack, LOW);
+  analogWrite(motorDereAd, velMax);  // derecho rápido
+  digitalWrite(motorDereBack, LOW);
 }
-//Funcion para girar izquierda
-void girarIzquierda()
-{
-  digitalWrite(motorIzqAd,LOW);
-  digitalWrite(motorIzqBack,LOW);
-  digitalWrite(motorDereAd,HIGH);
-  digitalWrite(motorDereBack,LOW); 
-}
-void detener()
-{
-  digitalWrite(motorIzqAd,LOW);
-  digitalWrite(motorIzqBack,LOW);
-  digitalWrite(motorDereAd,LOW);
-  digitalWrite(motorDereBack,LOW);
+
+void girarDerecha() {
+  analogWrite(motorIzqAd, velMax);   // izquierdo rápido
+  digitalWrite(motorIzqBack, LOW);
+  analogWrite(motorDereAd, velGiro); // derecho más lento
+  digitalWrite(motorDereBack, LOW);
 }
