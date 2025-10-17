@@ -1,10 +1,10 @@
 // ------------------ SENSORES INFRARROJOS ------------------
-const int sensorIzq = 13;  // Sensor infrarrojo izquierdo
+const int sensorIzq = 49;  // Sensor infrarrojo izquierdo
 const int sensorDer = 25;  // Sensor infrarrojo derecho
 
 // ------------------ MOTORES ------------------
 // Lado derecho (Puente H 1)
-int IN1_D1 = 27;
+int IN1_D1 = 47;
 int IN2_D1 = 29;
 int IN3_D2 = 31;
 int IN4_D2 = 33;
@@ -20,8 +20,8 @@ int ENA_I = 7;   // PWM izquierdo
 int ENB_I = 8;
 
 // ------------------ VELOCIDADES ------------------
-const int velMax = 200;   // velocidad máxima
-const int velGiro = 130;  // velocidad más lenta para giros
+const int velMax = 70;   // velocidad máxima
+const int velGiro = 40;  // velocidad más lenta para giros
 
 void setup() {
   // Sensores
@@ -55,15 +55,15 @@ void loop() {
   Serial.print("  Der: "); Serial.println(valorDer);
 
   // Ambos sensores ven blanco → avanzar recto
-  if (valorIzq == HIGH && valorDer == HIGH) {
+  if (valorIzq == LOW && valorDer == LOW) {
     avanzar();
   }
   // Sensor izquierdo ve negro → girar suave a la izquierda
-  else if (valorIzq == LOW && valorDer == HIGH) {
+  else if (valorIzq == HIGH && valorDer == LOW) {
     girarIzquierda();
   }
   // Sensor derecho ve negro → girar suave a la derecha
-  else if (valorIzq == HIGH && valorDer == LOW) {
+  else if (valorIzq == LOW && valorDer == HIGH) {
     girarDerecha();
   }
   // Ambos sensores ven negro → detenerse (opcional)
@@ -93,7 +93,7 @@ void avanzar() {
 }
 
 void girarIzquierda() {
-  // Motores derechos adelante rápido
+  // Motores derechos rápido
   digitalWrite(IN1_D1, HIGH);
   digitalWrite(IN2_D1, LOW);
   digitalWrite(IN3_D2, HIGH);
